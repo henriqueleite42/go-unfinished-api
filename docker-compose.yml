@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack_unfinished-api
+    ports:
+      - "4566-4597:4566-4597"
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      SERVICES: cloudformation,s3
+      DATA_DIR: /tmp/localstack/data
+      LAMBDA_EXECUTOR: docker
+      DOCKER_HOST: unix:///var/run/docker.sock
+      LAMBDA_DOCKER_NETWORK: host
+      EDGE_PORT: 4566
+      DEBUG: 1
+    env_file:
+      - .env.dev
+    volumes:
+      - "./tmp:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - unfinished-api_network
+
+  postgres:
+    image: "postgres"
+    container_name: postgres_unfinished-api
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    networks:
+      - unfinished-api_network
+
+  api:
+    build:
+      context: "."
+      dockerfile: Dockerfile.dev
+    container_name: api_unfinished-api
+    command: ./server
+    depends_on:
+      - postgres
+			- localstack
+    ports:
+      - 3000:3000
+    networks:
+      - unfinished-api_network
+    environment:
+      - ENV=dev
+    env_file:
+      - .env.dev
+
+volumes:
+  postgres-data:
+
+networks:
+  unfinished-api_network:
+    driver: bridge

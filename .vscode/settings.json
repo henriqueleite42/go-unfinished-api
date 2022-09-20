@@ -1,0 +1,19 @@
+{
+	"cSpell.words": [
+		"godotenv",
+		"gofiber",
+		"gofrs",
+		"gorm",
+		"jinzhu",
+		"joho",
+		"maite",
+		"stretchr",
+		"Upsert",
+		"Usecase",
+		"usecases"
+	],
+	"go.toolsManagement.autoUpdate": true,
+	"[go]": {
+		"editor.defaultFormatter": "golang.go"
+	}
+}
